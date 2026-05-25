@@ -1,0 +1,79 @@
+{
+  "name": "ong-app",
+  "productName": "CDEJ LA MOISSON",
+  "version": "1.0.0",
+  "description": "Gestion des bénéficiaires sortants- CDEJ LA MOISSON",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "dist": "electron-forge make",
+    "dist:win": "electron-forge make --platform win32"
+  },
+  "keywords": [
+    "beneficiaires",
+    "ong",
+    "gestion"
+  ],
+  "author": {
+    "name": "Marie-Mabe",
+    "email": "topmabe@gmail.com"
+  },
+  "license": "MIT",
+  "build": {
+    "appId": "com.cdej-moisson.app",
+    "productName": "CDEJ LA MOISSON",
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CDEJ LA MOISSON"
+    }
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-deb": "^7.10.2",
+    "@electron-forge/maker-rpm": "^7.10.2",
+    "@electron-forge/maker-squirrel": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
+    "@electron-forge/plugin-fuses": "^7.10.2",
+    "@electron-forge/plugin-vite": "^7.10.2",
+    "@electron/fuses": "^1.8.0",
+    "@electron/rebuild": "^4.0.3",
+    "electron": "39.2.7",
+    "electron-builder": "^25.0.0",
+    "vite": "^5.4.21"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "electron-squirrel-startup": "^1.0.1"
+  }
+}

@@ -7,16 +7,18 @@ module.exports = {
     name: 'ong-app',
     executableName: 'ong-app',
     author: 'Marie-Mabe',
-    icon: './src/renderer/assets/icons/cde.png',
+    icon: './src/renderer/assets/icons/cde', // ← sans extension !
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
+      platforms: ['win32'],
       config: {
-        name: 'cde-app',
-        authors: 'Marie-Mabe <topmabe@gmail.com>',
-        setupIcon: './src/renderer/assets/icons/cde.png',
+        name: 'cde_app', // ← pas de tiret, uniquement lettres/chiffres/underscore
+        authors: 'Marie-Mabe',
+        setupIcon: './src/renderer/assets/icons/cde_1.ico', // ← .ico obligatoire
+        iconUrl: 'https://raw.githubusercontent.com/Marie-Mabe/ong-app/main/src/renderer/assets/icons/cde_1.ico',
       },
     },
     {
@@ -25,12 +27,15 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
+      platforms: ['linux'],
       config: {
-        name: 'ong-app',
-        maintainer: 'Marie-Mabe <topmabe@gmail.com>',
-        description: 'My Electron application description',
-        categories: ['Utility'],
-        icon: './src/renderer/assets/icons/cde.png',
+        options: {
+          name: 'ong-app',
+          maintainer: 'Marie-Mabe <topmabe@gmail.com>',
+          description: 'Gestion des bénéficiaires sortants - CDEJ LA MOISSON',
+          categories: ['Utility'],
+          icon: './src/renderer/assets/icons/cde.png', // ← .png OK pour Linux
+        },
       },
     },
   ],
@@ -38,11 +43,8 @@ module.exports = {
     {
       name: '@electron-forge/plugin-vite',
       config: {
-        // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
-        // If you are familiar with Vite configuration, it will look really familiar.
         build: [
           {
-            // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
             entry: 'src/main.js',
             config: 'vite.main.config.mjs',
             target: 'main',
@@ -61,8 +63,6 @@ module.exports = {
         ],
       },
     },
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,

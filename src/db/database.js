@@ -1,6 +1,15 @@
 import path from 'path';
 import { app } from 'electron';
-const Database = require('better-sqlite3');
+import { createRequire } from 'node:module';
+
+// ← Nécessaire pour utiliser require() dans un fichier ESM
+const require = createRequire(import.meta.url);
+
+// ← Résolution dynamique : chemin différent selon si packagé ou non
+const Database = app.isPackaged
+    ? require(path.join(process.resourcesPath, 'better-sqlite3'))
+    : require('better-sqlite3');
+
 
 
 class AppDatabase {

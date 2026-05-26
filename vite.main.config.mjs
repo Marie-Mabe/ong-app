@@ -2,10 +2,21 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: {
-        target: 'node16',  // adapte à la version de Node d'Electron
-        minify: false,     // plus sûr pour les modules natifs
+        target: 'node16',
+        minify: false,
         rollupOptions: {
-            external: ['better-sqlite3'], // <-- ça dit à Vite de ne pas inclure le module natif
+            external: [
+                'electron',          // ← manquait
+                'better-sqlite3',
+                'path',              // modules natifs Node
+                'fs',
+                'os',
+                'crypto',
+            ],
+            output: {
+                format: 'cjs',       // ← obligatoire pour le main process Electron
+                entryFileNames: '[name].js',
+            },
         },
     },
 });

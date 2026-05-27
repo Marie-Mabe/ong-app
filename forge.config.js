@@ -3,14 +3,13 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
-    asar: false,  // ← désactivé complètement, plus simple avec better-sqlite3
+    asar: {
+      unpack: '**/node_modules/better-sqlite3/**',
+    },
     name: 'CDEJ LA MOISSON',
     executableName: 'cdej-la-moisson',
     author: 'Marie-Mabe',
     icon: './src/renderer/assets/icons/cde',
-    extraResource: [
-      './node_modules/better-sqlite3', // ← copie better-sqlite3 dans resources
-    ],
   },
   rebuildConfig: {},
   makers: [
@@ -43,10 +42,6 @@ module.exports = {
     },
   ],
   plugins: [
-    {
-      name: '@electron-forge/plugin-auto-unpack-natives',
-      config: {},
-    },
     {
       name: '@electron-forge/plugin-vite',
       config: {

@@ -3,9 +3,7 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
-    asar: {
-      unpack: '**/node_modules/better-sqlite3/**',
-    },
+    asar: false, // ← asar complètement désactivé
     name: 'CDEJ LA MOISSON',
     executableName: 'cdej-la-moisson',
     author: 'Marie-Mabe',

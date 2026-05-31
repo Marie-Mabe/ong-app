@@ -3,7 +3,7 @@ import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import AppDatabase from './db/database.js';
 
-// Fix GPU issues on Linux
+
 app.disableHardwareAcceleration();
 
 let db;

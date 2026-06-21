@@ -2,13 +2,12 @@ name: Build and Release Electron App
 
 on:
   push:
-    tags:
-      - 'v*' # Se déclenche lorsque vous poussez un tag version (ex: v1.0.0)
-  workflow_dispatch: # Permet de lancer le build manuellement depuis l'interface GitHub
+    branches: [main] # Se déclenche automatiquement à chaque push sur main
+  workflow_dispatch: # 💡 AJOUT : Permet AUSSI de le lancer manuellement si besoin
 
 jobs:
-  release:
-    runs-on: windows-latest # 💡 C'est ça la magie : on compile sur un VRAI Windows !
+  build-windows:
+    runs-on: windows-latest # Machine virtuelle Windows native
 
     steps:
       - name: Check out Git repository
@@ -17,19 +16,34 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # Ajustez selon votre version locale de Node
+          node-version: 18 # Version stable recommandée pour Electron/Vite/Better-Sqlite3
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci # Installe proprement vos dépendances à partir du package-lock.json
+        run: npm ci # Installe proprement sans modifier le package-lock.json
 
       - name: Build Application for Windows
-        run: npm run dist:win
+        run: npm run dist:win # Génère le dossier portable contenant l'ASAR unpacked
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CDEJ-LA-MOISSON-Windows
-          path: out/CDEJ LA MOISSON-win32-x64/ # Téléverse le dossier portable fonctionnel
+          name: CDEJ-LA-MOISSON-Windows-Portable
+          path: out/CDEJ LA MOISSON-win32-x64/ # Téléverse le dossier complet fonctionnel
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run make
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: out/make/**/*.deb

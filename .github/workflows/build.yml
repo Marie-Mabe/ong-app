@@ -1,36 +1,35 @@
-name: Build
+name: Build and Release Electron App
 
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*' # Se déclenche lorsque vous poussez un tag version (ex: v1.0.0)
+  workflow_dispatch: # Permet de lancer le build manuellement depuis l'interface GitHub
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm install
-      - run: npx electron-rebuild -f -w better-sqlite3
-      - run: npm run make
-      - uses: actions/upload-artifact@v4
-        with:
-          name: linux-packages
-          path: out/make/**/*.deb
+  release:
+    runs-on: windows-latest # 💡 C'est ça la magie : on compile sur un VRAI Windows !
 
-  build-windows:
-    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - run: npm install
-      - run: npx electron-rebuild -f -w better-sqlite3
-      - run: npm run make
-      - uses: actions/upload-artifact@v4
+          node-version: 18 # Ajustez selon votre version locale de Node
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci # Installe proprement vos dépendances à partir du package-lock.json
+
+      - name: Build Application for Windows
+        run: npm run dist:win
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: windows-installer
-          path: out/make/**/*.exe
+          name: CDEJ-LA-MOISSON-Windows
+          path: out/CDEJ LA MOISSON-win32-x64/ # Téléverse le dossier portable fonctionnel

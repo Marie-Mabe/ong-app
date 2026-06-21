@@ -1,13 +1,26 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const fs = require('fs-extra'); // Souvent inclus, ou utilisez fs classique
+const path = require('path');
 
 module.exports = {
   packagerConfig: {
-    asar: false, // ← asar complètement désactivé
+    asar: {
+      unpack: '**/node_modules/better-sqlite3/**/*'
+    },
     name: 'CDEJ LA MOISSON',
     executableName: 'cdej-la-moisson',
-    author: 'Marie-Mabe',
-    icon: './src/renderer/assets/icons/cde',
+  },
+  hooks: {
+    // Un hook simple pour juste s'assurer que le dossier est copié avant le build
+    packageAfterPrune: async (forgeConfig, buildPath) => {
+      const fs = require('fs-extra');
+      const path = require('path');
+      const source = path.join(__dirname, 'node_modules', 'better-sqlite3');
+      const destination = path.join(buildPath, 'node_modules', 'better-sqlite3');
+      await fs.ensureDir(path.join(buildPath, 'node_modules'));
+      await fs.copy(source, destination);
+    }
   },
   rebuildConfig: {},
   makers: [
@@ -23,20 +36,11 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      platforms: ['win32'],
     },
     {
-      name: '@electron-forge/maker-deb',
-      platforms: ['linux'],
-      config: {
-        options: {
-          name: 'ong-app',
-          maintainer: 'Marie-Mabe <topmabe@gmail.com>',
-          description: 'Gestion des bénéficiaires sortants - CDEJ LA MOISSON',
-          categories: ['Utility'],
-          icon: './src/renderer/assets/icons/cde.png',
-        },
-      },
+      name: '@electron-forge/maker-zip',
+      platforms: ['darwin'],
     },
   ],
   plugins: [
@@ -44,24 +48,17 @@ module.exports = {
       name: '@electron-forge/plugin-vite',
       config: {
         build: [
-          {
-            entry: 'src/main.js',
-            config: 'vite.main.config.mjs',
-            target: 'main',
-          },
-          {
-            entry: 'src/preload.js',
-            config: 'vite.preload.config.mjs',
-            target: 'preload',
-          },
+          { entry: 'src/main.js', config: 'vite.main.config.mjs', target: 'main' },
+          { entry: 'src/preload.js', config: 'vite.preload.config.mjs', target: 'preload' },
         ],
         renderer: [
-          {
-            name: 'main_window',
-            config: 'vite.renderer.config.mjs',
-          },
+          { name: 'main_window', config: 'vite.renderer.config.mjs' },
         ],
       },
+    },
+    {
+      name: '@electron-forge/plugin-auto-unpack-natives',
+      config: {},
     },
     new FusesPlugin({
       version: FuseVersion.V1,

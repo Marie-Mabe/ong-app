@@ -4,9 +4,11 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 
-
+// =================================================================
+// 💡 LA CORRECTION : Cibler 'app.asar.unpacked' au lieu de 'app'
+// =================================================================
 const Database = app.isPackaged
-    ? require(path.join(process.resourcesPath, 'app', 'node_modules', 'better-sqlite3'))
+    ? require(path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules', 'better-sqlite3'))
     : require('better-sqlite3');
 
 class AppDatabase {
@@ -17,6 +19,7 @@ class AppDatabase {
         this.db.pragma('foreign_keys = ON');
         this.initialize();
     }
+
 
     initialize() {
         this.db.exec(`
